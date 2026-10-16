@@ -68,6 +68,11 @@ a single contact channel are excluded at intake and never become cases. Identifi
 Security numbers in the 900–999 area, which is never issued; telephone numbers in 555-01XX; and
 e-mail addresses under `.test`.
 
+## AI usage
+
+Generative AI tools assisted in developing this software and in generating the synthetic dataset.
+The authors reviewed all AI-assisted output. The manuscript's AI usage statement covers this.
+
 ## Licence and citation
 
 The licence will be added before this repository is made public. Citation details will follow the

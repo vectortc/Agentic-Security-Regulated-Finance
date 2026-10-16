@@ -116,7 +116,9 @@ Known limitations: PII detection is field-name plus regex, tool responses are st
 C2 is checked against the current authorizer rather than the entitlements in force at the time of the
 event (drift is now reported, not fixed), the ledger adapters are in-memory and SQLite, and the
 implementation is single-agent. This is a reference implementation with a conformance suite, not a
-production system. It was written with Claude as a pair programmer.
+production system. Generative AI tools assisted in developing this software and in generating the
+synthetic dataset; the authors reviewed all AI-assisted output (see the manuscript's AI usage
+statement).
 
 ## Citation
 
