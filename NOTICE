@@ -1,0 +1,12 @@
+casebound
+Copyright 2026 VectorTech Consulting Inc.
+
+This product includes software developed at VectorTech Consulting Inc.
+
+This repository is the reference implementation accompanying the manuscript
+"Agent Security Meets Regulatory Reality: A Practitioner Systematization of
+Autonomous-Agent Threats and Controls in Regulated Financial Systems".
+
+All data in this repository is synthetic. It is not the production system
+described in that manuscript, and none of the production observations
+reported there are derived from it.

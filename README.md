@@ -34,7 +34,7 @@ Paths are relative to `packages/casebound/src/casebound/` unless stated otherwis
 | Algorithm 5, Reconstruct_Decision_Evidence (C5) | `reconstruct.py` | `tests/test_scenarios.py`, `tests/test_paper_alignment.py` |
 | Case-bound, hash-chained ledger (C1) | `ledger.py`, `events.py` | the `tampered-ledger` scenario |
 | Φ(c) and Theorem 1 | `reconstruct.phi` | `tests/test_theorem1.py` (property-based) |
-| Case-ID propagation (Section 5.2) | `packages/casebound-mcp` | its `tests/` |
+| Case-ID propagation (Section 5.3) | `packages/casebound-mcp` | its `tests/` |
 | Inference mediation (Assumption A1) | `model.py` | `tests/test_model_gate.py` |
 
 ## Reproducing the checks
@@ -75,5 +75,7 @@ The authors reviewed all AI-assisted output. The manuscript's AI usage statement
 
 ## Licence and citation
 
-The licence will be added before this repository is made public. Citation details will follow the
-archived release.
+Licensed under the Apache License 2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+
+To cite this software, see [`CITATION.cff`](CITATION.cff). Please cite the accompanying paper as
+well; `CITATION.cff` carries both.

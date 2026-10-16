@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the accompanying paper."
+title: "casebound: reference implementation of case-bound control invariants for regulated agentic workflows"
+abstract: >-
+  Reference implementation of the five case-bound control invariants, the five
+  reference algorithms and the audit-reconstruction gate described in "Agent
+  Security Meets Regulatory Reality". Runs on synthetic data only.
+type: software
+version: 1.0.0
+date-released: 2026-10-16
+license: Apache-2.0
+repository-code: "https://github.com/vectortc/Agentic-Security-Regulated-Finance"
+# Add the Zenodo archive DOI here once the v1.0.0 release is archived:
+# doi: 10.5281/zenodo.XXXXXXX
+authors:
+  - family-names: "Guda Nagavenkata Srinivasa"
+    given-names: "Krishna Mohan"
+    orcid: "https://orcid.org/0009-0004-8783-2228"
+    affiliation: "VectorTech Consulting Inc."
+  - family-names: "Kalaga"
+    given-names: "Satya Phanindra"
+    affiliation: "VectorTech Consulting Inc."
+  - family-names: "Guda Vishnu"
+    given-names: "Karthik"
+    affiliation: "VectorTech Consulting Inc."
+keywords:
+  - agent security
+  - action auditability
+  - least-privilege authorization
+  - Model Context Protocol
+  - regulated finance
+  - LLM agents
+preferred-citation:
+  type: article
+  title: "Agent Security Meets Regulatory Reality: A Practitioner Systematization of Autonomous-Agent Threats and Controls in Regulated Financial Systems"
+  journal: "Software: Practice and Experience"
+  year: 2026
+  authors:
+    - family-names: "Guda Nagavenkata Srinivasa"
+      given-names: "Krishna Mohan"
+      orcid: "https://orcid.org/0009-0004-8783-2228"
+      affiliation: "VectorTech Consulting Inc."
+    - family-names: "Kalaga"
+      given-names: "Satya Phanindra"
+      affiliation: "VectorTech Consulting Inc."
+    - family-names: "Guda Vishnu"
+      given-names: "Karthik"
+      affiliation: "VectorTech Consulting Inc."
