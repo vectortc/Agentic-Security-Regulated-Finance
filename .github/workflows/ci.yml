@@ -1,0 +1,61 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/casebound
+    strategy:
+      matrix: {python: ["3.11", "3.12"]}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ matrix.python }}"}
+      - uses: actions/setup-node@v4          # tests/test_engine_parity.py runs the browser engine
+        with: {node-version: "20"}
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+      - name: dataset is reproducible from its seed
+        run: |
+          python -m demo.kyc.generate
+          git diff --exit-code -- demo/kyc/dataset.json
+      - name: demo/demo.html is up to date
+        run: python -m demo.build_dashboard --check
+
+  models:
+    # No network: the Claude client runs against a fake SDK object and the end-to-end test replays
+    # a recorded run. Live-model tests are opt-in and never run here.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/casebound-models
+    env:
+      PYTHONPATH: ../casebound
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e ../casebound -e ".[dev,vertex]"
+      - run: pytest -q
+
+  mcp:
+    # The MCP protocol in process and over Streamable HTTP on an ephemeral localhost port.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/casebound-mcp
+    env:
+      PYTHONPATH: ../casebound
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e ../casebound -e ".[dev]"
+      - run: pytest -q
+      - name: the demo runs over MCP
+        run: casebound-demo --tools mcp --scenario happy

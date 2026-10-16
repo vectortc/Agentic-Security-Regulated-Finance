@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "casebound"
+version = "0.3.0"
+description = "Reference implementation of case-bound control invariants (C1-C5) and audit-reconstruction for LLM agents in regulated workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "hypothesis>=6"]
+
+[project.scripts]
+casebound-demo = "demo.kyc.run:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/casebound", "demo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]

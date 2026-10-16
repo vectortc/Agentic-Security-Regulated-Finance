@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+dist/
+build/
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.db
+
+# Node
+node_modules/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets (model provider keys)
+.env
+.env.*
+
+# Local model-run cassettes (curated fixtures live under packages/*/tests/cassettes/)
+runs/

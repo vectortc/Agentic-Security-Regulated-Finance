@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "casebound-mcp"
+version = "0.4.0"
+description = "Case-bound MCP tool contract, tool servers, client adapter and gateway for casebound's Algorithm 2."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+dependencies = ["casebound>=0.3", "mcp>=2.2,<3", "uvicorn>=0.30"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+casebound-mcp = "casebound_mcp.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/casebound_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

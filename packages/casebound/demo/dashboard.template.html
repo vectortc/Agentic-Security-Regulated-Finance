@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casebound Auditor Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ---- tokens ---------------------------------------------------------------
+   Neutrals carry a slight green bias toward the accent, so the greys read as
+   chosen rather than inherited. Status colours are separate from the accent and
+   always ship with a text label, never colour alone. */
+:root{
+  --bg:#F6F7F5; --raised:#FFFFFF; --sunk:#ECEEEA; --line:#D6DBD6; --line2:#C2C9C2;
+  --ink:#18232E; --ink2:#4A5764; --ink3:#7C8894;
+  --acc:#1E7F5C; --acc-ink:#FFFFFF; --acc-soft:#DDEFE6;
+  --ok:#1E7F5C; --ok-soft:#DDEFE6;
+  --warn:#A9701C; --warn-soft:#F5E9D2;
+  --fail:#9E2A2B; --fail-soft:#F3DEDE;
+  --info:#2C5F8A; --info-soft:#DCE8F2;
+  --focus:#1E7F5C;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:'IBM Plex Serif',Georgia,'Times New Roman',serif;
+  --r:6px; --gut:20px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1518; --raised:#161E21; --sunk:#1C2529; --line:#2A3438; --line2:#3A4649;
+  --ink:#E6EAE7; --ink2:#AFBAB5; --ink3:#7F8B87;
+  --acc:#4FBF93; --acc-ink:#0F1518; --acc-soft:#16342A;
+  --ok:#4FBF93; --ok-soft:#16342A;
+  --warn:#E0B060; --warn-soft:#3A2E14;
+  --fail:#E88585; --fail-soft:#3A1E1E;
+  --info:#7FB2DC; --info-soft:#16283A;
+  --focus:#4FBF93;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1518; --raised:#161E21; --sunk:#1C2529; --line:#2A3438; --line2:#3A4649;
+  --ink:#E6EAE7; --ink2:#AFBAB5; --ink3:#7F8B87;
+  --acc:#4FBF93; --acc-ink:#0F1518; --acc-soft:#16342A;
+  --ok:#4FBF93; --ok-soft:#16342A;
+  --warn:#E0B060; --warn-soft:#3A2E14;
+  --fail:#E88585; --fail-soft:#3A1E1E;
+  --info:#7FB2DC; --info-soft:#16283A;
+  --focus:#4FBF93;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+:where(a){color:var(--acc)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--acc);color:var(--acc-ink);padding:8px 14px;z-index:20}
+.skip:focus{left:8px;top:8px}
+
+/* ---- header --------------------------------------------------------------- */
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px;
+  padding:14px var(--gut) 12px;border-bottom:1px solid var(--line)}
+.brand{font:600 19px/1.2 var(--serif);letter-spacing:-.01em}
+.brand span{display:block;font:400 10.5px/1.4 var(--mono);letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink3);margin-top:2px}
+.stats{display:flex;flex-wrap:wrap;gap:4px 20px;margin:0 0 0 auto;
+  font:12px var(--mono);color:var(--ink3)}
+.stats div{display:flex;gap:6px;align-items:baseline}
+.stats b{color:var(--ink2);font-weight:500;font-variant-numeric:tabular-nums}
+
+/* ---- control bar: above the pipeline, so a run is always in view ----------- */
+.bar{background:var(--sunk);border-bottom:1px solid var(--line);z-index:9}
+@media(min-width:760px){.bar{position:sticky;top:0}}
+.bar-inner{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px;
+  padding:12px var(--gut);max-width:1440px;margin:0 auto}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 190px}
+.field.narrow{flex:0 1 128px}
+.field label{font:500 10.5px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+select,input[type=text]{font:13.5px var(--sans);padding:8px 9px;border:1px solid var(--line2);
+  border-radius:var(--r);background:var(--raised);color:var(--ink);width:100%;min-width:0}
+button{font:500 13.5px var(--sans);padding:9px 16px;border-radius:var(--r);
+  border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);cursor:pointer;white-space:nowrap}
+button:hover{filter:brightness(1.06)}
+button.ghost{background:var(--raised);color:var(--ink);border-color:var(--line2)}
+button.ghost:hover{background:var(--sunk);filter:none}
+button.tiny{padding:4px 9px;font-size:12px}
+button[disabled]{opacity:.45;cursor:not-allowed}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.tgl{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--line2);
+  border-radius:100px;background:var(--raised);font-size:12.5px;cursor:pointer;white-space:nowrap}
+.tgl:has(input:checked){background:var(--acc-soft);border-color:var(--acc);color:var(--acc)}
+.tgl input{margin:0;accent-color:var(--acc)}
+.bar-note{margin:0;padding:0 var(--gut) 11px;max-width:1440px;margin:0 auto;
+  font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.bar-note b{color:var(--ink);font-weight:500}
+
+main{max-width:1440px;margin:0 auto;padding:0 var(--gut) 48px}
+
+/* ---- pipeline: HTML, so it wraps and reads at any width -------------------- */
+.stage-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:16px 0 9px;scroll-margin-top:104px}
+.eyebrow{font:500 10.5px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--ink3);margin:0}
+.boundary{border:1px dashed var(--acc);border-radius:var(--r);padding:11px 12px 12px;position:relative}
+.boundary>.eyebrow{color:var(--acc);margin-bottom:8px}
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;list-style:none;margin:0;padding:0}
+.stage{display:flex;flex-direction:column;justify-content:center;gap:2px;flex:1 1 92px;min-width:0;
+  padding:9px 10px;border:1px solid var(--line2);border-radius:var(--r);background:var(--raised);
+  transition:background .18s,border-color .18s,color .18s}
+.stage b{font:600 13px var(--sans)}
+.stage small{font:10.5px var(--mono);color:var(--ink3);letter-spacing:.02em}
+.stage.on{background:var(--ok-soft);border-color:var(--ok)}
+.stage.on b,.stage.on small{color:var(--ok)}
+.stage.warn{background:var(--warn-soft);border-color:var(--warn)}
+.stage.warn b,.stage.warn small{color:var(--warn)}
+.stage.bad{background:var(--fail-soft);border-color:var(--fail)}
+.stage.bad b,.stage.bad small{color:var(--fail)}
+.arrow{align-self:center;color:var(--ink3);font-size:13px;flex:0 0 auto}
+.external{display:flex;align-items:center;gap:10px;margin-top:8px}
+.external .arrow{transform:none}
+.hop{font:10.5px var(--mono);color:var(--ink3);white-space:nowrap}
+@media(max-width:700px){
+  /* Stack, but keep each stage one compact row so the whole pipeline still fits a phone screen. */
+  .flow{flex-direction:column;gap:3px}
+  .stage{flex:0 0 auto;flex-direction:row;align-items:baseline;gap:9px;padding:8px 10px}
+  .stage small{margin-left:auto;text-align:right}
+  .arrow{transform:rotate(90deg);margin:-3px 0;font-size:11px}
+  .external{gap:8px;margin-top:6px}
+  .external .arrow{transform:rotate(90deg)}
+  .external .stage{flex:1 1 auto}
+  .hop{display:none}
+  .boundary{padding:9px 10px 10px}
+}
+@media(prefers-reduced-motion:reduce){.stage{transition:none}}
+.boundary-log{margin:9px 0 0;font-size:12.5px;line-height:1.55;color:var(--ink2)}
+.boundary-log b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+
+/* ---- verdict strip -------------------------------------------------------- */
+.verdict{display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;margin-top:16px;
+  padding:14px 16px;border:1px solid var(--line);border-left-width:4px;border-radius:var(--r);background:var(--raised)}
+.verdict.ok{border-left-color:var(--ok)}
+.verdict.inc{border-left-color:var(--warn)}
+.verdict.fail{border-left-color:var(--fail)}
+.verdict.idle{border-left-color:var(--line2)}
+.verdict-status{font:600 24px/1.1 var(--serif);letter-spacing:.005em}
+.verdict.ok .verdict-status{color:var(--ok)}
+.verdict.inc .verdict-status{color:var(--warn)}
+.verdict.fail .verdict-status{color:var(--fail)}
+.verdict-body{flex:1 1 280px;min-width:0;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+.verdict-body b{color:var(--ink);font-weight:500}
+.verdict-meta{font:11.5px var(--mono);color:var(--ink3);white-space:nowrap}
+
+/* ---- tabs ----------------------------------------------------------------- */
+.tabs{display:flex;gap:2px;margin:18px 0 0;border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:thin}
+.tabs button{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;
+  color:var(--ink3);padding:9px 13px;font-weight:500}
+.tabs button:hover{color:var(--ink2);filter:none}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--acc)}
+.panel{padding-top:16px;min-width:0}
+.panel[hidden]{display:none}
+.panel-intro{margin:0 0 13px;font-size:13.5px;line-height:1.55;color:var(--ink2);max-width:74ch}
+
+/* ---- checks --------------------------------------------------------------- */
+.checks{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--raised)}
+.check{display:grid;grid-template-columns:52px 30px minmax(0,1fr);gap:10px;
+  padding:10px 13px;border-bottom:1px solid var(--line);align-items:start}
+.check:last-child{border-bottom:none}
+.check>*{min-width:0;overflow-wrap:anywhere}
+.check .ln{font:11.5px var(--mono);color:var(--ink3);padding-top:2px}
+.check-name{font-size:13.5px}
+.check-note{font-size:12.5px;color:var(--ink2);line-height:1.5;margin-top:1px}
+@media(max-width:560px){
+  .check{grid-template-columns:auto 1fr;gap:6px 9px}
+  .check .ln{grid-column:1}
+  .check-main{grid-column:1/-1}
+}
+
+/* ---- chips ---------------------------------------------------------------- */
+.chip{display:inline-block;font:500 11px var(--mono);letter-spacing:.03em;padding:2px 7px;
+  border-radius:3px;background:var(--sunk);color:var(--ink2);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.fail{background:var(--fail-soft);color:var(--fail)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.info{background:var(--info-soft);color:var(--info)}
+
+/* ---- findings ------------------------------------------------------------- */
+.findings{display:grid;gap:8px;margin-top:14px}
+.finding{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:10px 13px;
+  border:1px solid var(--line);border-left-width:3px;border-radius:var(--r);background:var(--raised);font-size:13px}
+.finding.warn{border-left-color:var(--warn)}
+.finding.serious,.finding.fail{border-left-color:var(--fail)}
+.finding.info{border-left-color:var(--info)}
+.finding>div{min-width:0;overflow-wrap:anywhere}
+.finding-note{color:var(--ink2);font-size:12.5px;line-height:1.5;margin-top:2px}
+
+/* ---- tables --------------------------------------------------------------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--raised)}
+.tablewrap.tall{max-height:min(60vh,460px);overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{position:sticky;top:0;text-align:left;background:var(--sunk);color:var(--ink3);
+  font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 11px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.m{font:12px var(--mono);color:var(--ink2)}
+td.num{font-variant-numeric:tabular-nums}
+tbody tr.bad td{background:var(--fail-soft)}
+tbody tr.hi td{background:var(--warn-soft)}
+tbody tr.dim td{color:var(--ink3);font-style:italic}
+tbody tr[data-c]{cursor:pointer}
+tbody tr[data-c]:hover td{background:var(--sunk)}
+tbody tr.sel td{background:var(--acc-soft)}
+.empty{padding:22px 14px;text-align:center;color:var(--ink3);font-size:13px}
+
+/* ---- key/value ------------------------------------------------------------ */
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 16px;margin:0;font-size:13px}
+.kv dt{font:11.5px var(--mono);color:var(--ink3);padding-top:1px}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+
+/* ---- bars + charts -------------------------------------------------------- */
+.bars{display:grid;gap:5px;margin:0 0 4px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,150px) minmax(0,1fr) 84px;gap:12px;align-items:center;font-size:13px}
+.bar-track{display:block;background:var(--sunk);border-radius:3px;height:14px;overflow:hidden}
+.bar-fill{display:block;height:14px;border-radius:3px;min-width:2px}
+.bar-num{font:500 12.5px var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
+@media(max-width:520px){
+  .bar-row{grid-template-columns:minmax(0,1fr) 84px}
+  .bar-track{grid-column:1/-1;order:3}
+}
+.figure{margin:0}
+.figcap{font-size:12px;color:var(--ink3);margin:6px 0 0;line-height:1.5}
+svg{max-width:100%;height:auto}
+
+/* ---- disclosure ----------------------------------------------------------- */
+details.ref{border-top:1px solid var(--line);margin-top:14px}
+details.ref>summary{cursor:pointer;padding:12px 0;font:500 13px var(--sans);color:var(--ink2);list-style:none;
+  display:flex;align-items:center;gap:8px}
+details.ref>summary::-webkit-details-marker{display:none}
+details.ref>summary::before{content:'+';font:400 15px var(--mono);color:var(--ink3);width:12px}
+details.ref[open]>summary::before{content:'–'}
+details.ref>summary:hover{color:var(--ink)}
+.ref-body{padding:0 0 16px 20px;font-size:13px;line-height:1.6;color:var(--ink2);max-width:78ch}
+.ref-body dt{font-weight:600;color:var(--ink)}
+.ref-body code{font:12px var(--mono);background:var(--sunk);padding:1px 5px;border-radius:3px}
+pre{margin:0;font:11.5px/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;
+  max-height:min(55vh,420px);overflow:auto;background:var(--sunk);padding:11px;border-radius:var(--r)}
+.mono-note{font:11.5px var(--mono);color:var(--ink3)}
+.stack{display:grid;gap:14px}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media(min-width:1080px){.split{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- GENERATED FILE. Edit demo/dashboard.template.html, demo/engine.js, demo/harness.js or
+     demo/ui.js, then run `python -m demo.build_dashboard`.
+     tests/test_dashboard_build.py fails if this file drifts from its parts. -->
+<a class="skip" href="#main">Skip to controls</a>
+
+<header>
+  <p class="brand">casebound <span>Auditor console</span></p>
+  <div class="stats">
+    <div>ledger <b id="stTotal">0</b></div>
+    <div>cases <b id="stCases">0</b></div>
+    <div>audit read <b id="stRead">–</b></div>
+    <div>mode <b id="stMode">extended</b></div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="field">
+      <label for="applicant">Applicant</label>
+      <select id="applicant"></select>
+    </div>
+    <div class="field">
+      <label for="fault">Fault injection</label>
+      <select id="fault"></select>
+    </div>
+    <div class="field narrow">
+      <label for="runCount">Volume</label>
+      <select id="runCount">
+        <option value="1">1 case</option>
+        <option value="25">25 cases</option>
+        <option value="140">All 140</option>
+      </select>
+    </div>
+    <button id="run">Run</button>
+    <button class="ghost" id="reset">Reset</button>
+    <div class="toggles">
+      <label class="tgl" for="fix" title="Algorithm 3 also consults the compliance feed, so a delivered-but-unapproved successor routes the case to review instead of serving a stale version.">
+        <input type="checkbox" id="fix"> Policy fix
+      </label>
+      <label class="tgl" for="literal" title="Drop the plan-commitment clause from line 8 and return the manuscript's INCOMPLETE at line 9.">
+        <input type="checkbox" id="literal"> Literal Alg 5
+      </label>
+    </div>
+  </div>
+  <p class="bar-note" id="faultNote"></p>
+</div>
+
+<main id="main">
+  <div class="stage-head">
+    <p class="eyebrow">Pipeline</p>
+    <button class="ghost tiny" id="replay" type="button">Replay</button>
+  </div>
+
+  <div class="boundary">
+    <p class="eyebrow">Controlled boundary · in-VPC</p>
+    <div class="flow" id="flow" role="list"></div>
+  </div>
+  <div class="external">
+    <span class="arrow" aria-hidden="true">→</span>
+    <span class="hop">leaves the boundary</span>
+    <div class="stage" id="st-model" style="flex:0 1 240px">
+      <b>Model endpoint</b><small>third party · redacted payload only</small>
+    </div>
+  </div>
+  <p class="boundary-log" id="boundaryLog"></p>
+
+  <div class="verdict idle" id="verdict" role="status" aria-live="polite">
+    <span class="verdict-status" id="vStatus">—</span>
+    <span class="verdict-body" id="vBody">Choose an applicant and press Run.</span>
+    <span class="verdict-meta" id="vMeta"></span>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" id="tab-verdict" aria-controls="p-verdict" aria-selected="true">Verdict</button>
+    <button role="tab" id="tab-chain" aria-controls="p-chain" aria-selected="false" tabindex="-1">Evidence chain</button>
+    <button role="tab" id="tab-pack" aria-controls="p-pack" aria-selected="false" tabindex="-1">Evidence pack</button>
+    <button role="tab" id="tab-cases" aria-controls="p-cases" aria-selected="false" tabindex="-1">Cases</button>
+    <button role="tab" id="tab-policy" aria-controls="p-policy" aria-selected="false" tabindex="-1">Policy</button>
+    <button role="tab" id="tab-portfolio" aria-controls="p-portfolio" aria-selected="false" tabindex="-1">Portfolio</button>
+  </div>
+
+  <div class="panel" id="p-verdict" role="tabpanel" aria-labelledby="tab-verdict"></div>
+  <div class="panel" id="p-chain" role="tabpanel" aria-labelledby="tab-chain" hidden></div>
+  <div class="panel" id="p-pack" role="tabpanel" aria-labelledby="tab-pack" hidden></div>
+  <div class="panel" id="p-cases" role="tabpanel" aria-labelledby="tab-cases" hidden></div>
+  <div class="panel" id="p-policy" role="tabpanel" aria-labelledby="tab-policy" hidden></div>
+  <div class="panel" id="p-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden></div>
+
+  <details class="ref">
+    <summary>What the five invariants mean</summary>
+    <dl class="ref-body kv">
+      <dt>C1</dt><dd>Case-bound continuity — every step is appended under the case id, the per-case sequence is gap-free, and the chain is hashed.</dd>
+      <dt>C2</dt><dd>Least privilege — a tool runs only under a capability allowed for the agent's role and workflow.</dd>
+      <dt>C3</dt><dd>Current-policy grounding — every policy-dependent step cites the approved version effective at that timestamp.</dd>
+      <dt>C4</dt><dd>Inference-boundary redaction — only redacted, PII-free structured fields cross to the model.</dd>
+      <dt>C5</dt><dd>Decision-evidence reconstruction — the full decision basis is recoverable from the case id alone.</dd>
+    </dl>
+  </details>
+
+  <details class="ref">
+    <summary>The two readings of Algorithm 5</summary>
+    <div class="ref-body">
+      <p>Two clauses in the manuscript admit more than one reading, so both are implemented. <b>Literal Alg 5</b> in the control bar switches between them.</p>
+      <dl class="kv">
+        <dt>line 8</dt><dd>By default <code>Is_Chain_Traversable</code> also requires every step the planner declared to have reached the gate. Read literally, it only requires each <code>TOOL_INVOKED</code> to have a <code>TOOL_COMPLETED</code>.</dd>
+        <dt>line 9</dt><dd>By default a violated invariant returns <code>FAILED</code>, per the status-semantics paragraph. Read literally it returns <code>INCOMPLETE</code>, per the pseudocode.</dd>
+      </dl>
+      <p>Run the gateway-bypass fault under both. The literal reading certifies the case <b>COMPLETE</b> with the bypass demoted to a finding, which is exactly what Assumption A1 predicts: the ledger never observes the call, so Algorithm 5 may certify a case whose true execution violated an invariant.</p>
+    </div>
+  </details>
+
+  <details class="ref">
+    <summary>About this demo and its data</summary>
+    <div class="ref-body">
+      <p>Every applicant, document, policy and tool response is synthetic, generated from a fixed seed by <code>demo/kyc/generate.py</code>. Distributions follow the shapes the manuscript reports; the values are fabricated. Identifiers use ranges reserved for fiction — SSN area numbers 900–999, which have never been issued; the 555-01XX telephone exchange; the reserved <code>.test</code> domain.</p>
+      <p>The orchestrator, model and tools are deterministic stand-ins. The ledger, the four gates and the reconstruction are real implementations of Algorithms 1–5 and run in this page. A parity test runs the same engine against the Python core over the same fault matrix, so the two cannot drift. Archived ledger volume is simulated to show that audit cost is O(E<sub>case</sub>), not O(E<sub>total</sub>).</p>
+    </div>
+  </details>
+</main>
+
+<script type="application/json" id="dataset">@@DATASET@@</script>
+<script>@@ENGINE@@</script>
+<script>@@HARNESS@@</script>
+<script>@@UI@@</script>
+</body>
+</html>
