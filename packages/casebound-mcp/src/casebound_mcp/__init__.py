@@ -1,6 +1,6 @@
 """casebound-mcp: the case-bound MCP tool contract, tool servers, client adapter and gateway.
 
-  contract     what a tool must accept and echo to sit behind the gateway (Sections 5.2, 7.2)
+  contract     what a tool must accept and echo to sit behind the gateway (Sections 5.3, 7.2)
   tool_server  serve a ToolRegistry's tools as MCP servers that meet the contract
   client       McpToolAdapter: casebound's ToolAdapter port over MCP
   gateway      Casebound as an MCP server: case_id mandatory, Algorithm 2 on every call

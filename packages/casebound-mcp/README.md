@@ -11,7 +11,7 @@ casebound workflow (Alg 1) -----------> Algorithm 2 ---> McpToolAdapter --MCP-->
 
 | Module | What it is |
 |---|---|
-| `contract` | What a tool must accept and echo: a mandatory `case_id` (validated by the protocol, before the tool runs), Algorithm 2's provenance envelope, and a response tagged with the case and attempt (Sections 5.2 and 7.2 of the paper). |
+| `contract` | What a tool must accept and echo: a mandatory `case_id` (validated by the protocol, before the tool runs), Algorithm 2's provenance envelope, and a response tagged with the case and attempt (Sections 5.3 and 7.2 of the paper). |
 | `tool_server` | Serves an in-process `ToolRegistry` as an MCP server that meets the contract. |
 | `client` | `McpToolAdapter`, the `casebound.ToolAdapter` port over MCP. |
 | `gateway` | Casebound as an MCP server. `case_id` is mandatory and must name an open case. C2 uses the gateway's configured role and the case's workflow; C3 uses the case's recorded policy; C4 scans the whole payload. Every call is recorded as `TOOL_INVOKED`/`TOOL_COMPLETED`, and every refusal as the denial event. |

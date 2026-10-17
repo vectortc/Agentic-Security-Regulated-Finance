@@ -1,4 +1,4 @@
-"""The case-bound tool-call contract: Section 5.2's case-ID propagation layer as an interface.
+"""The case-bound tool-call contract: Section 5.3's case-ID propagation layer as an interface.
 
 Section 7.2 reports that MCP tools built without audit in scope carry no case identifier, session
 context or provenance in their call signatures, and that retrofitting them was the expensive part.

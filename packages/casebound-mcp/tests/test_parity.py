@@ -25,7 +25,7 @@ def test_scenario_is_identical_over_mcp(scenario, paper_literal, kyc_tools):
 
 
 def test_the_tool_log_and_the_ledger_join_on_case_id_and_idempotency_key(kyc_tools, tool_log):
-    """Section 5.2: the case id is the join key across the orchestrator log, the tool log and the ledger."""
+    """Section 5.3: the case id is the join key across the orchestrator log, the tool log and the ledger."""
     outcome, _, _, ledger = run_scenario("happy", tools=kyc_tools, return_ledger=True)
     completed = [(outcome.case_id, e.data["tool"], e.data["idempotency_key"])
                  for e in ledger.fetch_by_case(outcome.case_id) if e.type == EventType.TOOL_COMPLETED]

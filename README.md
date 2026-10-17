@@ -70,8 +70,9 @@ e-mail addresses under `.test`.
 
 ## AI usage
 
-Generative AI tools assisted in developing this software and in generating the synthetic dataset.
-The authors reviewed all AI-assisted output. The manuscript's AI usage statement covers this.
+Generative AI tools (Claude Opus 4.8, Claude Opus 5 and Claude Opus 5.5; Anthropic, anthropic.com)
+assisted in developing this software and in generating the synthetic dataset. The authors reviewed
+all AI-assisted output. The manuscript's AI usage statement covers this.
 
 ## Licence and citation
 

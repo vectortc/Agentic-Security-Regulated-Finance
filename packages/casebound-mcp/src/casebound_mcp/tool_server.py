@@ -5,7 +5,7 @@ as in Figure 3. The server knows nothing about the gates: it trusts that its cal
 gateway. What it does guarantee is the interface: no call without a case id, and every answer
 tagged with the case and the attempt it belongs to. Its own call log is keyed by the same case id,
 which is what makes the case id the join key across the orchestrator log, the tool log and the
-ledger (Section 5.2).
+ledger (Section 5.3).
 """
 from __future__ import annotations
 
