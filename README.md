@@ -80,3 +80,9 @@ Licensed under the Apache License 2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](N
 
 To cite this software, see [`CITATION.cff`](CITATION.cff). Please cite the accompanying paper as
 well; `CITATION.cff` carries both.
+
+Guda Nagavenkata Srinivasa, K. M., Kalaga, S. P., & Guda Vishnu, K. (2026). Agent Security Meets
+Regulatory Reality: A Practitioner Systematization of Autonomous-Agent Threats and Controls in
+Regulated Financial Systems. *Software: Practice and Experience*.
+
+The paper is under review; this citation will be updated with volume, issue and DOI on publication.
